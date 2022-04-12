@@ -13,7 +13,7 @@ async function main() {
   await etherBankContract.deployed();
   await attackerContract.deployed();
 
-  [addr1, addr2] = await hre.ethers.getSigners();
+  [owner, addr1] = await hre.ethers.getSigners();
 
   let txData = {
     value: ethers.utils.parseEther("10.0")
@@ -27,12 +27,12 @@ async function main() {
   bal = ethers.utils.formatEther(bal);
   console.log(`The amount of eth in attacker at the beginning: ${bal}`);
 
-  await etherBankContract.connect(addr2).deposit(txData);
+  await etherBankContract.connect(addr1).deposit(txData);
   bal = await etherBankContract.getBalance();
   bal = ethers.utils.formatEther(bal);
   console.log(`The amount of eth in store after deposit: ${bal}`);
 
-  let attack = await attackerContract.connect(addr1).attack(txData);
+  let attack = await attackerContract.connect(owner).attack(txData);
   await attack.wait();
 
   bal = await attackerContract.getBalance();
